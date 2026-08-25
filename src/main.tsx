@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.tsx';
 import Home from './pages/Home.tsx';
-import Dashboard from './pages/Dashboard.tsx';
 import CategoryView from './pages/CategoryView.tsx';
 import ArticleView from './pages/ArticleView.tsx';
 import About from './pages/About.tsx';
@@ -11,6 +10,7 @@ import Contact from './pages/Contact.tsx';
 import Podcasts from './pages/Podcasts.tsx';
 import Reportages from './pages/Reportages.tsx';
 import Rubriques from './pages/Rubriques.tsx';
+import NotFound from './pages/NotFound.tsx';
 
 // Admin imports
 import AdminLayout from './pages/admin/AdminLayout.tsx';
@@ -47,13 +47,11 @@ createRoot(document.getElementById('root')!).render(
           <Route path="rubriques" element={<Rubriques />} />
           <Route path="rubriques/:id" element={<CategoryView />} />
           <Route path="article/:id" element={<ArticleView />} />
-          <Route path="dashboard" element={<Dashboard />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="podcasts" element={<Podcasts />} />
           <Route path="reportages" element={<Reportages />} />
-          {/* Fallbacks for undefined routes in this prototype */}
-          <Route path="*" element={<div className="p-20 text-center text-2xl font-serif">Page en construction</div>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

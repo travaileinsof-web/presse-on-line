@@ -36,7 +36,7 @@ export default function AdminLayout() {
       <aside className="w-full md:w-64 bg-brand-dark text-white flex flex-col sticky top-0 h-screen overflow-y-auto">
         <div className="p-6 border-b border-gray-800">
           <Link to="/" className="text-xl font-serif font-black tracking-widest uppercase">
-            Samou<span className="text-brand-red">Média</span>
+            Einsof<span className="text-brand-red">-media</span>
           </Link>
           <span className="block text-xs text-gray-400 mt-1 uppercase tracking-widest font-bold">Administration</span>
         </div>

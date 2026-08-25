@@ -12,6 +12,7 @@ import Lenis from '@studio-freight/lenis';
 import { CustomCursor } from './components/CustomCursor';
 import { uiSound } from './lib/sound';
 import { PopupAd } from './components/PopupAd';
+import { EditorialAssistant } from './components/EditorialAssistant';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -26,6 +27,9 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -38,10 +42,10 @@ export default function App() {
 
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      animationFrame = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    let animationFrame = requestAnimationFrame(raf);
 
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -59,6 +63,7 @@ export default function App() {
     window.addEventListener('mousedown', handleMouseDown);
 
     return () => {
+      cancelAnimationFrame(animationFrame);
       lenis.destroy();
       window.removeEventListener('mousedown', handleMouseDown);
     };
@@ -76,6 +81,7 @@ export default function App() {
       <ScrollToTop />
       <Header />
       <PopupAd />
+      <EditorialAssistant />
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}

@@ -1,6 +1,6 @@
 {
-  "name": "SAMOU MEDIA",
-  "description": "Informer. Éclairer. Rassembler. La voix de Samou, le regard sur le monde.",
+  "name": "EINSOF-MEDIA",
+  "description": "L’information guinéenne de proximité, vérifiée et utile au quotidien.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

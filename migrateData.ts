@@ -44,7 +44,7 @@ async function main() {
           content: art.content || '',
           imageUrl: art.imageUrl || '',
           categoryId: art.categoryId || 'actualites',
-          author: art.author || 'Samou Média',
+          author: art.author || 'Einsof-media',
           date: art.date ? new Date(art.date) : new Date(),
           readTime: art.readTime || '5 min',
           isFeatured: art.isFeatured || false,
@@ -67,7 +67,7 @@ async function main() {
         create: {
           id: chron.id,
           title: chron.title,
-          author: chron.author || 'Samou Média',
+          author: chron.author || 'Einsof-media',
           authorRole: chron.authorRole || '',
           authorImage: chron.authorImage || '',
           date: chron.date ? new Date(chron.date) : new Date(),
@@ -110,7 +110,7 @@ async function main() {
       update: {},
       create: {
         id: 1,
-        name: configData.name || 'SAMOU MEDIA',
+        name: configData.name || 'EINSOF-MEDIA',
         slogan: configData.slogan || '',
         address: configData.address || '',
         phone: configData.phone || '',

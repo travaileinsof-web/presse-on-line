@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Roboto", ui-sans-serif, system-ui, sans-serif; /* Fallback to sans for mockup fidelity */
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", Georgia, serif;
 
   --color-brand-red: #E30613;
   --color-brand-yellow: #FFD100;
@@ -17,7 +17,21 @@
     @apply font-sans bg-white text-gray-900 antialiased;
   }
 
+  :focus-visible {
+    outline: 3px solid var(--color-brand-yellow);
+    outline-offset: 3px;
+  }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-bold tracking-tight text-brand-dark;
+    @apply font-serif font-bold tracking-tight text-brand-dark;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

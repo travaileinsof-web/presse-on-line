@@ -1,60 +1,70 @@
 import { useEffect, useState } from 'react';
 
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+  return response.json();
+}
+
 export function useCategories() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/categories', { cache: 'no-store' })
-      .then(res => res.json())
+    fetchJson<any[]>('/api/categories')
       .then(data => {
         setCategories(data);
-        setLoading(false);
-      });
+      })
+      .catch(() => setError('Impossible de charger les rubriques.'))
+      .finally(() => setLoading(false));
   }, []);
 
-  return { categories, loading, setCategories };
+  return { categories, loading, error, setCategories };
 }
 
 export function useConfig() {
   const [config, setConfig] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/config', { cache: 'no-store' })
-      .then(res => res.json())
+    fetchJson<any>('/api/config')
       .then(data => {
         setConfig(data);
-        setLoading(false);
-      });
+      })
+      .catch(() => setError('Impossible de charger la configuration.'))
+      .finally(() => setLoading(false));
   }, []);
 
-  return { config, loading };
+  return { config, loading, error };
 }
 
 export function useAds(location?: string, format?: string) {
   const [ads, setAds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let url = '/api/ads?';
     if (location) url += `location=${location}&`;
     if (format) url += `format=${format}`;
     
-    fetch(url, { cache: 'no-store' })
-      .then(res => res.json())
+    fetchJson<any[]>(url)
       .then(data => {
         setAds(data.filter((ad: any) => ad.isActive));
-        setLoading(false);
-      });
+      })
+      .catch(() => setError('Impossible de charger les annonces.'))
+      .finally(() => setLoading(false));
   }, [location, format]);
 
-  return { ads, loading };
+  return { ads, loading, error };
 }
 
 export function useArticles(params?: { category?: string; featured?: boolean; limit?: number; sort?: string; q?: string }) {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let url = '/api/articles?';
@@ -64,29 +74,30 @@ export function useArticles(params?: { category?: string; featured?: boolean; li
     if (params?.sort) url += `sort=${params.sort}&`;
     if (params?.q) url += `q=${encodeURIComponent(params.q)}&`;
 
-    fetch(url, { cache: 'no-store' })
-      .then(res => res.json())
+    fetchJson<any[]>(url)
       .then(data => {
         setArticles(data);
-        setLoading(false);
-      });
+      })
+      .catch(() => setError('Impossible de charger les articles.'))
+      .finally(() => setLoading(false));
   }, [params?.category, params?.featured, params?.limit, params?.sort, params?.q]);
 
-  return { articles, loading };
+  return { articles, loading, error };
 }
 
 export function useChroniques() {
   const [chroniques, setChroniques] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/chroniques', { cache: 'no-store' })
-      .then(res => res.json())
+    fetchJson<any[]>('/api/chroniques')
       .then(data => {
         setChroniques(data);
-        setLoading(false);
-      });
+      })
+      .catch(() => setError('Impossible de charger les chroniques.'))
+      .finally(() => setLoading(false));
   }, []);
 
-  return { chroniques, loading };
+  return { chroniques, loading, error };
 }

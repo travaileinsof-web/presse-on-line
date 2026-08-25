@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCategories, useArticles } from '../lib/hooks';
 import ArticleCard from '../components/ArticleCard';
 import { ChevronDown, ChevronRight } from 'lucide-react';
@@ -9,8 +9,10 @@ import { Reveal } from '../components/Reveal';
 export default function Rubriques() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { categories, loading: catLoading } = useCategories();
-  const { articles, loading: artLoading } = useArticles();
+  const searchQuery = searchParams.get('q') || undefined;
+  const { articles, loading: artLoading } = useArticles({ q: searchQuery });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Sync state with URL

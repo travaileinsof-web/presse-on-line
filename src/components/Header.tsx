@@ -1,9 +1,9 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, Menu, Home } from 'lucide-react';
 import { useCategories, useConfig } from '../lib/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
-import type { Key, ReactNode } from 'react';
+import type { FormEvent, Key, ReactNode } from 'react';
 
 export default function Header() {
   const { categories } = useCategories();
@@ -11,10 +11,18 @@ export default function Header() {
   const activeCategories = categories.filter(c => c.isActive);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
+
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchTerm.trim();
+    if (query) navigate(`/rubriques?q=${encodeURIComponent(query)}`);
+  };
 
   const NavLink = ({ to, children }: { to: string, children: ReactNode, key?: Key }) => {
     const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
@@ -38,7 +46,7 @@ export default function Header() {
             animate={{ x: ['100%', '-100%'] }}
             transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
           >
-            Guinée : le Président nomme 20 ministres ce lundi • Les prix des denrées en baisse dans les marchés de Conakry • Lancement des travaux de bitumage de l'axe Forécariah - Samou Benty
+            À suivre : décisions publiques • vie chère et pouvoir d’achat • initiatives locales en Guinée
           </motion.div>
         </div>
         <div className="hidden md:flex items-center gap-4 shrink-0 text-xs font-bold uppercase ml-4">
@@ -56,13 +64,13 @@ export default function Header() {
       <div className="max-w-7xl mx-auto w-full px-4 py-4 flex flex-col lg:flex-row items-center justify-between gap-6">
         {/* Logo */}
         <Link to="/" className="flex items-center shrink-0">
-          <img src="/logo.jpg" alt="SAMOU MEDIA" className="w-16 h-16 object-contain mr-3" />
+          <img src="/logo.jpg" alt="Einsof-media" className="w-16 h-16 object-contain mr-3" />
           <div className="flex flex-col justify-center">
             <div className="text-4xl font-sans font-black tracking-tighter leading-none text-brand-red">
-              SAMOU MÉDIA
+              EINSOF-MEDIA
             </div>
             <span className="text-xs font-medium text-gray-700 italic mt-1">
-              La voix de Samou, le regard sur le monde
+              Comprendre la Guinée, raconter ses territoires
             </span>
           </div>
         </Link>
@@ -75,16 +83,18 @@ export default function Header() {
         </div>
 
         {/* Search Bar */}
-        <div className="hidden md:flex relative w-64 shrink-0">
+        <form onSubmit={handleSearch} className="hidden md:flex relative w-64 shrink-0">
           <input 
             type="text" 
-            placeholder="Recherche..." 
+            placeholder="Rechercher dans l’actualité"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full pl-4 pr-10 py-2 border border-gray-300 bg-gray-50 focus:outline-none focus:border-brand-red text-sm"
           />
           <button className="absolute right-0 top-0 h-full px-3 text-white bg-brand-red">
             <Search size={18} />
           </button>
-        </div>
+        </form>
         
         {/* Mobile menu toggle */}
         <button 

@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import type { Article } from '../types';
-import { articles as mockArticles } from '../lib/mockData'; // à supprimer
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Reveal } from '../components/Reveal';
@@ -16,6 +15,17 @@ export default function ArticleView() {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
+  const shareArticle = async () => {
+    try {
+      const shareData = { title: article?.title || 'Einsof-media', url: window.location.href };
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(window.location.href);
+      }
+    } catch {}
+  };
 
   useEffect(() => {
     fetch(`/api/articles/${id}`, { cache: 'no-store' })
@@ -37,7 +47,7 @@ export default function ArticleView() {
       {/* Immersive Header */}
       <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-brand-dark">
         <motion.div style={{ y, opacity }} className="absolute inset-0 origin-top">
-          <img onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Crect fill='%23f3f4f6' width='800' height='600'/%3E%3Ctext fill='%239ca3af' font-family='sans-serif' font-size='30' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3ESAMOU MEDIA%3C/text%3E%3C/svg%3E"; }} 
+          <img onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Crect fill='%23f3f4f6' width='800' height='600'/%3E%3Ctext fill='%239ca3af' font-family='sans-serif' font-size='30' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3EEINSOF-MEDIA%3C/text%3E%3C/svg%3E"; }}
             src={article.imageUrl} 
             alt={article.title} 
             className="w-full h-full object-cover opacity-60"
@@ -93,7 +103,7 @@ export default function ArticleView() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:text-brand-red hover:border-brand-red hover:bg-brand-red/5 transition-all duration-300 group">
+              <button aria-label="Partager cet article" onClick={shareArticle} className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:text-brand-red hover:border-brand-red hover:bg-brand-red/5 transition-all duration-300 group">
                 <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </button>
             </div>
@@ -109,10 +119,6 @@ export default function ArticleView() {
             
             <AdSpace format="in-article" className="rounded-xl" />
 
-            <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mt-8 font-medium">
-              {/* Mock extra content for better visual presentation */}
-              Ce reportage s'inscrit dans notre volonté continue de mettre en lumière les réalités du terrain. Les témoignages recueillis démontrent une résilience extraordinaire de la population face aux défis quotidiens. Nous continuerons à suivre de près l'évolution de cette situation dans nos prochaines éditions.
-            </p>
             <div className="mt-16 border-t border-gray-100 pt-12">
               <AdSpace format="horizontal" className="rounded-xl" />
             </div>

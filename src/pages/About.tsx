@@ -7,7 +7,7 @@ export default function About() {
       
       <div className="prose prose-lg prose-red max-w-none text-gray-800">
         <p className="text-xl font-medium leading-relaxed mb-8">
-          Bienvenue sur <strong>SAMOU MÉDIA</strong>, "La voix de Samou, le regard sur le monde."
+          Bienvenue sur <strong>Einsof-media</strong>, le média qui met l’information guinéenne en mouvement.
         </p>
         
         <p className="mb-6">
@@ -16,7 +16,7 @@ export default function About() {
 
         <h2 className="text-2xl font-bold mt-10 mb-4 font-serif">Notre Mission</h2>
         <p className="mb-6">
-          Samou Média a été créé avec pour ambition de devenir une référence incontournable de l'information en Guinée, et plus particulièrement dans la préfecture de Forécariah (Samou Benty). Nous croyons au pouvoir de l'information pour transformer la société, éduquer les masses et donner une voix à ceux qui n'en ont pas.
+          Einsof-media rassemble actualité locale, décryptage et récits de terrain pour mieux comprendre la Guinée. Notre rédaction privilégie les faits vérifiés, les voix de proximité et les sujets qui ont un impact concret sur la vie quotidienne.
         </p>
 
         <h2 className="text-2xl font-bold mt-10 mb-4 font-serif">Notre Équipe</h2>

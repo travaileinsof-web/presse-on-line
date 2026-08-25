@@ -1,304 +1,285 @@
-import { useArticles, useCategories, useChroniques, useConfig } from '../lib/hooks';
-import { Link } from 'react-router-dom';
-import { Play, ChevronLeft, ChevronRight, Facebook, Twitter, Youtube } from 'lucide-react';
-import { AdSpace } from '../components/AdSpace';
-import { SectionRibbon } from '../components/SectionRibbon';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { ChevronLeft, ChevronRight, Clock, MapPin, Radio } from "lucide-react";
 
-export default function Home() {
-  const { articles, loading: articlesLoading } = useArticles();
-  const { categories } = useCategories();
-  const { chroniques } = useChroniques();
-  const { config } = useConfig();
+// ---------------------------------------------------------------------------
+// Contenu de démonstration — à remplacer par vos données réelles (useArticles)
+// ---------------------------------------------------------------------------
+const SLIDES = [
+  {
+    id: 1,
+    category: "Politique",
+    color: "red",
+    title: "Le gouvernement annonce un plan d'investissement routier pour la Guinée forestière",
+    excerpt:
+      "Une enveloppe pluriannuelle doit financer la réhabilitation de plusieurs axes reliant Conakry aux préfectures de l'intérieur.",
+    author: "Aïssatou Diallo",
+    date: "25 août 2026",
+    readTime: "4 min",
+    image:
+      "https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=1600&auto=format&fit=crop",
+  },
+  {
+    id: 2,
+    category: "Société",
+    color: "green",
+    title: "À Forécariah, le marché hebdomadaire retrouve son affluence d'avant-saison",
+    excerpt:
+      "Commerçants et producteurs locaux témoignent d'une reprise progressive des échanges sur la place centrale.",
+    author: "Mamadou Bah",
+    date: "24 août 2026",
+    readTime: "3 min",
+    image:
+      "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?q=80&w=1600&auto=format&fit=crop",
+  },
+  {
+    id: 3,
+    category: "Économie",
+    color: "yellow",
+    title: "Filière anacarde : les exportateurs guinéens misent sur la transformation locale",
+    excerpt:
+      "Plusieurs coopératives investissent dans de petites unités de décorticage pour capter davantage de valeur ajoutée.",
+    author: "Fatoumata Camara",
+    date: "23 août 2026",
+    readTime: "5 min",
+    image:
+      "https://images.unsplash.com/photo-1595856619767-ab739fa8a1a5?q=80&w=1600&auto=format&fit=crop",
+  },
+  {
+    id: 4,
+    category: "Sport",
+    color: "blue",
+    title: "Le Syli national entame sa préparation en vue des prochaines éliminatoires",
+    excerpt:
+      "Le sélectionneur a convoqué un groupe élargi, avec plusieurs jeunes joueurs évoluant dans le championnat local.",
+    author: "Ibrahima Sory Sylla",
+    date: "22 août 2026",
+    readTime: "3 min",
+    image:
+      "https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=1600&auto=format&fit=crop",
+  },
+  {
+    id: 5,
+    category: "Culture",
+    color: "red",
+    title: "Samou Benty accueille un festival de musiques traditionnelles ce week-end",
+    excerpt:
+      "Griots et ensembles locaux se relaieront sur scène pour trois soirées consacrées au patrimoine musical de la région.",
+    author: "Rédaction",
+    date: "21 août 2026",
+    readTime: "2 min",
+    image:
+      "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1600&auto=format&fit=crop",
+  },
+];
 
-  if (articlesLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
+const COLORS = {
+  red: "#C81D25",
+  green: "#0B7A44",
+  yellow: "#E4A700",
+  blue: "#1C4E80",
+};
 
-  const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name || id;
+const SLIDE_DURATION = 6000; // ms
 
-  const featuredArticles = articles.filter(a => a.isFeatured);
-  const mainFeatured = featuredArticles[0];
-  const subFeatured = featuredArticles.slice(1, 5);
-  
-  const latestArticles = articles.filter(a => a.id !== mainFeatured?.id).slice(0, 4);
-  const mostRead = [...articles].sort((a, b) => b.views - a.views).slice(0, 5);
-  const samouBentyArticles = articles.filter(a => a.categoryId === 'samou-benty').slice(0, 4);
-  
-  const gallery = [
-    "https://picsum.photos/seed/samou15/800/600",
-    "https://picsum.photos/seed/samou16/800/600",
-    "https://picsum.photos/seed/samou17/800/600",
-    "https://picsum.photos/seed/samou18/800/600",
-    "https://picsum.photos/seed/samou19/800/600",
-  ];
+export default function HeroALaUne() {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [progressKey, setProgressKey] = useState(0);
+  const timeoutRef = useRef(null);
+
+  const goTo = useCallback((i) => {
+    setIndex(((i % SLIDES.length) + SLIDES.length) % SLIDES.length);
+    setProgressKey((k) => k + 1);
+  }, []);
+
+  const next = useCallback(() => goTo(index + 1), [index, goTo]);
+  const prev = useCallback(() => goTo(index - 1), [index, goTo]);
+
+  useEffect(() => {
+    if (paused) return;
+    timeoutRef.current = setTimeout(next, SLIDE_DURATION);
+    return () => clearTimeout(timeoutRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, paused]);
+
+  const active = SLIDES[index];
+  const activeColor = COLORS[active.color];
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      
-      {/* ROW 1: A LA UNE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        {/* Main Featured */}
-        {mainFeatured && (
-          <div className="lg:col-span-8 relative group overflow-hidden">
-            <Link to={`/article/${mainFeatured.id}`} className="block w-full h-[400px] md:h-[500px]">
-              <img src={mainFeatured.imageUrl} alt={mainFeatured.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                <span className="bg-brand-red text-white text-xs font-bold uppercase px-3 py-1 mb-4 inline-block">
-                  {getCategoryName(mainFeatured.categoryId)}
-                </span>
-                <h2 className="text-white text-3xl md:text-4xl font-bold leading-tight mb-2">
-                  {mainFeatured.title}
-                </h2>
-                <p className="text-gray-200 text-sm md:text-base line-clamp-2 mb-3">
-                  {mainFeatured.excerpt}
-                </p>
-                <div className="flex items-center text-gray-300 text-xs">
-                  <span className="uppercase">{mainFeatured.author}</span>
-                  <span className="mx-2">•</span>
-                  <span>{new Date(mainFeatured.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                </div>
-              </div>
-              <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-brand-red"></div>
-                <div className="w-2 h-2 rounded-full bg-white/50"></div>
-                <div className="w-2 h-2 rounded-full bg-white/50"></div>
-              </div>
-            </Link>
-          </div>
-        )}
-        
-        {/* Sub Featured */}
-        <div className="lg:col-span-4 flex flex-col justify-between">
-          {subFeatured.map((article) => (
-            <Link to={`/article/${article.id}`} key={article.id} className="flex gap-4 group mb-4 last:mb-0 bg-gray-50 hover:bg-gray-100 transition-colors">
-              <div className="w-1/3 aspect-[4/3] shrink-0 overflow-hidden">
-                <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              </div>
-              <div className="flex flex-col py-1 pr-2 w-2/3">
-                <span className="text-[10px] font-bold text-brand-red uppercase mb-1">
-                  {getCategoryName(article.categoryId)}
-                </span>
-                <h3 className="font-bold text-brand-dark text-sm leading-snug line-clamp-3 group-hover:text-brand-red transition-colors">
-                  {article.title}
-                </h3>
-                <span className="text-[10px] text-gray-500 mt-auto pt-2 uppercase">
-                  {new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </span>
-              </div>
-            </Link>
+    <div
+      className="w-full"
+      style={{ fontFamily: "'Inter', ui-sans-serif, system-ui" }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+        .headline-font { font-family: 'Fraunces', Georgia, serif; }
+
+        @keyframes riseIn {
+          from { opacity: 0; transform: translateY(14px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .rise-in { animation: riseIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .rise-in-d1 { animation-delay: 0.06s; }
+        .rise-in-d2 { animation-delay: 0.12s; }
+        .rise-in-d3 { animation-delay: 0.18s; }
+
+        .slide-track {
+          display: flex;
+          width: ${SLIDES.length * 100}%;
+          transition: transform 0.85s cubic-bezier(0.65, 0, 0.15, 1);
+        }
+        .slide-pane {
+          width: ${100 / SLIDES.length}%;
+          flex-shrink: 0;
+          position: relative;
+        }
+        .slide-pane img {
+          transform: scale(1.06);
+          transition: transform 7s ease-out;
+        }
+        .slide-pane.is-active img {
+          transform: scale(1);
+        }
+
+        .cadence-fill {
+          animation: fillbar ${SLIDE_DURATION}ms linear forwards;
+        }
+        @keyframes fillbar {
+          from { width: 0%; }
+          to   { width: 100%; }
+        }
+        .cadence-paused .cadence-fill { animation-play-state: paused; }
+
+        .thumb-btn { transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), opacity 0.35s; }
+        .thumb-btn:hover { transform: translateY(-2px); }
+
+        .nav-arrow { transition: background-color 0.25s, transform 0.25s; }
+        .nav-arrow:hover { transform: scale(1.08); }
+      `}</style>
+
+      {/* Bandeau repère — heure, lieu, direct */}
+      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide mb-3 px-1" style={{ color: "#5b5b5b" }}>
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1">
+            <MapPin size={12} /> Conakry, Guinée
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock size={12} /> {active.date}
+          </span>
+        </div>
+        <span className="flex items-center gap-1.5" style={{ color: COLORS.red }}>
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style={{ backgroundColor: COLORS.red }} />
+            <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: COLORS.red }} />
+          </span>
+          Édition du jour
+        </span>
+      </div>
+
+      {/* Carrousel principal */}
+      <div
+        className="relative overflow-hidden rounded-none shadow-sm"
+        style={{ height: "min(64vh, 560px)", backgroundColor: "#14181C" }}
+      >
+        <div
+          className="slide-track h-full"
+          style={{ transform: `translateX(-${index * (100 / SLIDES.length)}%)` }}
+        >
+          {SLIDES.map((s, i) => (
+            <div key={s.id} className={`slide-pane h-full ${i === index ? "is-active" : ""}`}>
+              <img src={s.image} alt={s.title} className="w-full h-full object-cover" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 40%, rgba(10,10,10,0.92) 100%)",
+                }}
+              />
+            </div>
           ))}
         </div>
-      </div>
 
-      {/* Ad Space */}
-      <div className="mb-10 w-full bg-gray-100 flex justify-center py-4">
-        <AdSpace format="horizontal" />
-      </div>
-
-      {/* ROW 2: DERNIERES ACTUALITES + LES PLUS LUS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
-        
-        <div className="lg:col-span-8">
-          <SectionRibbon color="red" rightLink={{text: '', url: '#'}}>
-            DERNIÈRES ACTUALITÉS
-          </SectionRibbon>
-          
-          <div className="flex gap-4 text-xs font-bold uppercase mb-6 text-gray-500 border-b border-gray-200 pb-2 overflow-x-auto hide-scrollbar">
-            <span className="text-brand-red border-b-2 border-brand-red pb-2 whitespace-nowrap cursor-pointer">TOUTES</span>
-            <span className="hover:text-brand-dark cursor-pointer whitespace-nowrap">NATIONAL</span>
-            <span className="hover:text-brand-dark cursor-pointer whitespace-nowrap">POLITIQUE</span>
-            <span className="hover:text-brand-dark cursor-pointer whitespace-nowrap">SOCIÉTÉ</span>
-            <span className="hover:text-brand-dark cursor-pointer whitespace-nowrap">ÉCONOMIE</span>
-            <span className="hover:text-brand-dark cursor-pointer whitespace-nowrap">SPORT</span>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {latestArticles.map((article) => (
-              <Link to={`/article/${article.id}`} key={article.id} className="group">
-                <div className="relative aspect-[4/3] mb-3 overflow-hidden">
-                  <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  <div className="absolute bottom-0 left-0 bg-brand-blue text-white text-[10px] font-bold uppercase px-2 py-0.5">
-                    {getCategoryName(article.categoryId)}
-                  </div>
-                </div>
-                <h3 className="font-bold text-sm leading-tight text-brand-dark group-hover:text-brand-red transition-colors mb-2 line-clamp-3">
-                  {article.title}
-                </h3>
-                <span className="text-[10px] text-gray-500 uppercase">
-                  {new Date(article.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </span>
-              </Link>
-            ))}
+        {/* Contenu texte — se relance à chaque changement de slide */}
+        <div key={index} className="absolute bottom-0 left-0 right-0 p-6 md:p-10 max-w-3xl">
+          <span
+            className="rise-in inline-block text-[11px] font-bold uppercase tracking-widest px-3 py-1 mb-4 text-white"
+            style={{ backgroundColor: activeColor }}
+          >
+            {active.category}
+          </span>
+          <h1 className="rise-in rise-in-d1 headline-font text-white text-2xl md:text-4xl lg:text-[2.75rem] leading-[1.08] font-semibold mb-3">
+            {active.title}
+          </h1>
+          <p className="rise-in rise-in-d2 text-white/75 text-sm md:text-base leading-relaxed mb-4 max-w-xl hidden sm:block">
+            {active.excerpt}
+          </p>
+          <div className="rise-in rise-in-d3 flex items-center gap-2 text-white/60 text-xs uppercase tracking-wide">
+            <span className="text-white/90 font-semibold">{active.author}</span>
+            <span>•</span>
+            <span>{active.readTime} de lecture</span>
           </div>
         </div>
 
-        {/* Sidebar: Les plus lus */}
-        <div className="lg:col-span-4">
-          <SectionRibbon color="green">
-            LES PLUS LUS
-          </SectionRibbon>
-          
-          <div className="flex flex-col gap-4">
-            {mostRead.map((article, index) => (
-              <Link to={`/article/${article.id}`} key={article.id} className="flex gap-3 group items-start border-b border-gray-100 pb-4 last:border-0">
-                <div className="w-8 h-8 shrink-0 bg-brand-red text-white flex items-center justify-center font-bold text-lg">
-                  {index + 1}
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-brand-dark group-hover:text-brand-red transition-colors leading-snug line-clamp-2">
-                    {article.title}
-                  </h3>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* Flèches */}
+        <button
+          aria-label="Article précédent"
+          onClick={prev}
+          className="nav-arrow absolute top-1/2 -translate-y-1/2 left-3 md:left-5 w-10 h-10 rounded-full flex items-center justify-center text-white"
+          style={{ backgroundColor: "rgba(20,24,28,0.45)", backdropFilter: "blur(2px)" }}
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button
+          aria-label="Article suivant"
+          onClick={next}
+          className="nav-arrow absolute top-1/2 -translate-y-1/2 right-3 md:right-5 w-10 h-10 rounded-full flex items-center justify-center text-white"
+          style={{ backgroundColor: "rgba(20,24,28,0.45)", backdropFilter: "blur(2px)" }}
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
 
-      {/* ROW 3: SAMOU BENTY EN DIRECT + VIDEOS A LA UNE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
-        
-        <div className="lg:col-span-8">
-          <SectionRibbon color="green">
-            SAMOU BENTY EN DIRECT
-          </SectionRibbon>
-          
-          <div className="relative">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {samouBentyArticles.map((article) => (
-                <Link to={`/article/${article.id}`} key={article.id} className="group">
-                  <div className="aspect-[4/3] overflow-hidden mb-2">
-                    <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                  </div>
-                  <h3 className="font-bold text-xs leading-snug text-brand-dark group-hover:text-brand-green line-clamp-3">
-                    {article.title}
-                  </h3>
-                </Link>
-              ))}
-            </div>
-            {/* Carousel Arrows */}
-            <button className="absolute top-1/3 -left-4 w-8 h-8 bg-brand-green text-white flex items-center justify-center shadow-md z-10 hidden md:flex hover:bg-green-700">
-              <ChevronLeft size={20} />
+      {/* Rail de miniatures avec barre de cadence */}
+      <div className="grid grid-cols-5 gap-3 mt-4">
+        {SLIDES.map((s, i) => {
+          const isActive = i === index;
+          return (
+            <button
+              key={s.id}
+              onClick={() => goTo(i)}
+              className="thumb-btn text-left group"
+              style={{ opacity: isActive ? 1 : 0.55 }}
+            >
+              <div className="relative overflow-hidden aspect-[4/3] mb-2">
+                <img src={s.image} alt="" className="w-full h-full object-cover group-hover:opacity-90" />
+                <div
+                  className="absolute top-0 left-0 h-[3px]"
+                  style={{ backgroundColor: COLORS[s.color], width: isActive ? "100%" : "0%" }}
+                />
+              </div>
+              <p
+                className="text-[11px] md:text-xs font-semibold leading-snug line-clamp-2"
+                style={{ color: "#14181C" }}
+              >
+                {s.title}
+              </p>
+
+              {/* barre de cadence — n'apparaît que sur la vignette active */}
+              {isActive && (
+                <div
+                  key={progressKey}
+                  className={`mt-2 h-[3px] w-full bg-black/10 overflow-hidden ${paused ? "cadence-paused" : ""}`}
+                >
+                  <div className="cadence-fill h-full" style={{ backgroundColor: activeColor }} />
+                </div>
+              )}
             </button>
-            <button className="absolute top-1/3 -right-4 w-8 h-8 bg-brand-green text-white flex items-center justify-center shadow-md z-10 hidden md:flex hover:bg-green-700">
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
-        
-        <div className="lg:col-span-4">
-          <SectionRibbon color="red" rightLink={{ text: 'VOIR TOUT', url: '/reportages' }}>
-            VIDÉOS À LA UNE
-          </SectionRibbon>
-          
-          <div className="flex flex-col gap-4">
-            {/* Main Video */}
-            <div className="relative group cursor-pointer aspect-video bg-gray-900">
-              <img src={gallery[0]} alt="Video Thumbnail" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 bg-black/60 rounded-full flex items-center justify-center text-white border-2 border-white/80">
-                  <Play size={24} className="ml-1 fill-white" />
-                </div>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                <h3 className="text-white font-bold text-sm leading-tight line-clamp-2">Reportage sur la relance économique à Forécariah</h3>
-              </div>
-            </div>
-            {/* Small Videos */}
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="relative group cursor-pointer aspect-video bg-gray-900">
-                  <img src={gallery[i]} alt="Mini Video" className="w-full h-full object-cover opacity-70 group-hover:opacity-100" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-6 h-6 bg-black/60 rounded-full flex items-center justify-center text-white border border-white/80">
-                      <Play size={12} className="ml-0.5 fill-white" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
-
-      {/* ROW 4: CHRONIQUES, GALERIE, RESTEZ CONNECTÉ */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        {/* Chroniques */}
-        <div>
-          <SectionRibbon color="yellow">
-            CHRONIQUES & ANALYSES
-          </SectionRibbon>
-          <div className="flex flex-col gap-4">
-            {chroniques.map((item) => (
-              <div key={item.id} className="flex gap-4 items-center group cursor-pointer border-b border-gray-100 pb-4 last:border-0">
-                <div className="w-16 h-16 rounded-full overflow-hidden shrink-0">
-                  <img src={item.authorAvatar} alt={item.author} className="w-full h-full object-cover" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm text-brand-dark group-hover:text-brand-yellow transition-colors leading-snug mb-1">
-                    {item.title}
-                  </h4>
-                  <div className="text-xs text-gray-500 font-bold uppercase">
-                    Par <span className="text-brand-dark">{item.author}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Galerie */}
-        <div>
-          <SectionRibbon color="red">
-            GALERIE PHOTOS
-          </SectionRibbon>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="col-span-1 row-span-2 relative group cursor-pointer overflow-hidden aspect-[1/2]">
-              <img src={gallery[2]} alt="Gallery Main" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-            </div>
-            <div className="col-span-1 relative group cursor-pointer overflow-hidden aspect-square">
-              <img src={gallery[3]} alt="Gallery 1" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-            </div>
-            <div className="col-span-1 relative group cursor-pointer overflow-hidden aspect-square">
-              <img src={gallery[4]} alt="Gallery 2" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-            </div>
-          </div>
-        </div>
-
-        {/* Restez Connecté */}
-        <div>
-          <SectionRibbon color="green">
-            RESTEZ CONNECTÉ
-          </SectionRibbon>
-          <div className="grid grid-cols-2 gap-4">
-            {/* FB */}
-            <a href={config?.socials?.facebook} className="flex flex-col items-center justify-center p-4 bg-gray-50 border border-gray-200 hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2] group transition-colors">
-              <Facebook size={24} className="text-[#1877F2] group-hover:text-white mb-2" />
-              <span className="font-bold text-lg">{config?.socialStats?.facebook || '12.5K'}</span>
-              <span className="text-[10px] uppercase font-bold text-gray-500 group-hover:text-white/80">Fans</span>
-            </a>
-            {/* X */}
-            <a href={config?.socials?.twitter} className="flex flex-col items-center justify-center p-4 bg-gray-50 border border-gray-200 hover:bg-black hover:text-white hover:border-black group transition-colors">
-              <Twitter size={24} className="text-black group-hover:text-white mb-2" />
-              <span className="font-bold text-lg">{config?.socialStats?.twitter || '8.2K'}</span>
-              <span className="text-[10px] uppercase font-bold text-gray-500 group-hover:text-white/80">Abonnés</span>
-            </a>
-            {/* YT */}
-            <a href={config?.socials?.youtube} className="flex flex-col items-center justify-center p-4 bg-gray-50 border border-gray-200 hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] group transition-colors">
-              <Youtube size={24} className="text-[#FF0000] group-hover:text-white mb-2" />
-              <span className="font-bold text-lg">{config?.socialStats?.youtube || '5.7K'}</span>
-              <span className="text-[10px] uppercase font-bold text-gray-500 group-hover:text-white/80">Abonnés</span>
-            </a>
-            {/* WA */}
-            <a href={config?.socials?.whatsapp} className="flex flex-col items-center justify-center p-4 bg-gray-50 border border-gray-200 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] group transition-colors">
-              <div className="w-6 h-6 rounded-full bg-[#25D366] text-white flex items-center justify-center font-bold text-xs mb-2 group-hover:bg-white group-hover:text-[#25D366]">W</div>
-              <span className="font-bold text-[11px] text-center leading-tight">Rejoignez-nous<br/>sur WhatsApp</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </main>
+    </div>
   );
 }
