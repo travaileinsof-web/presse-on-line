@@ -3,6 +3,7 @@ import { LayoutDashboard, Settings, Layers, FileText, Image as ImageIcon, LogOut
 import { motion } from 'motion/react';
 import { useEffect } from 'react';
 import { getToken, removeToken } from '../../lib/auth';
+import type { MouseEvent } from 'react';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -23,7 +24,7 @@ export default function AdminLayout() {
     { name: 'Publicités', path: '/admin/ads', icon: ImageIcon },
   ];
 
-  const handleLogout = (e: React.MouseEvent) => {
+  const handleLogout = (e: MouseEvent) => {
     e.preventDefault();
     removeToken();
     navigate('/admin/login');

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Save } from 'lucide-react';
 import { authFetch } from '../../lib/auth';
+import type { FormEvent } from 'react';
 
 export default function AdminSettings() {
   const [config, setConfig] = useState<any>({
@@ -24,7 +25,7 @@ export default function AdminSettings() {
       });
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setMessage('');
     setSaving(true);

@@ -3,6 +3,7 @@ import { Search, Menu, Home } from 'lucide-react';
 import { useCategories, useConfig } from '../lib/hooks';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
+import type { Key, ReactNode } from 'react';
 
 export default function Header() {
   const { categories } = useCategories();
@@ -15,7 +16,7 @@ export default function Header() {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  const NavLink = ({ to, children }: { to: string, children: React.ReactNode }) => {
+  const NavLink = ({ to, children }: { to: string, children: ReactNode, key?: Key }) => {
     const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
     return (
       <Link to={to} className="relative block py-3 px-3 text-[13px] font-bold uppercase whitespace-nowrap text-white hover:text-brand-yellow transition-colors">

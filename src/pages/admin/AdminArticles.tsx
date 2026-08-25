@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useCategories } from '../../lib/hooks';
 import { authFetch } from '../../lib/auth';
+import type { ChangeEvent, FormEvent } from 'react';
 
 export default function AdminArticles() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -35,7 +36,7 @@ export default function AdminArticles() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: FormEvent) => {
     e.preventDefault();
     if (currentArticle.id) {
       await authFetch(`/api/articles/${currentArticle.id}`, {
@@ -70,7 +71,7 @@ export default function AdminArticles() {
     fetchArticles();
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 

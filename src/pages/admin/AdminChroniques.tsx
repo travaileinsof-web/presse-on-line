@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, Save } from 'lucide-react';
 import { authFetch } from '../../lib/auth';
+import type { ChangeEvent, FormEvent } from 'react';
 
 export default function AdminChroniques() {
   const [chroniques, setChroniques] = useState<any[]>([]);
@@ -17,7 +18,7 @@ export default function AdminChroniques() {
     fetchChroniques();
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: FormEvent) => {
     e.preventDefault();
     if (currentChronique.id) {
       await authFetch(`/api/chroniques/${currentChronique.id}`, {
@@ -43,7 +44,7 @@ export default function AdminChroniques() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 

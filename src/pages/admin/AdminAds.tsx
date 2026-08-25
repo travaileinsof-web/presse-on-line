@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { authFetch } from '../../lib/auth';
+import type { ChangeEvent, FormEvent } from 'react';
 
 export default function AdminAds() {
   const [ads, setAds] = useState<any[]>([]);
@@ -33,7 +34,7 @@ export default function AdminAds() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -64,7 +65,7 @@ export default function AdminAds() {
     fetchAds();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const method = currentAd.id ? 'PUT' : 'POST';
     const url = currentAd.id ? `/api/ads/${currentAd.id}` : '/api/ads';
